@@ -71,4 +71,4 @@ analyse.py  pieExport.png  README.md  snapExport.csv
 
 
 
-![pieExport.png](/home/nighmared/Documents/GitHub Repos/SnapVisualizer/pieExport.png)
+![pieExport.png](pieExport.png)
