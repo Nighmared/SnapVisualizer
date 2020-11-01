@@ -118,6 +118,6 @@ snap_hist = json.load(open("snap_history.json"))
 
 worker = parser()
 worker.parse_hist(snap_hist)
-#worker.parse_hist(chat_hist)
-worker.export()
-worker.makePie()
+#worker.parse_hist(chat_hist) #currently seems to be buggy...
+worker.export() #exports .csv file with usernames and number of snaps
+worker.makePie() #exports  pieExport.png with pie graph :)
