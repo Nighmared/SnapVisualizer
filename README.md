@@ -9,7 +9,7 @@
 
 ## HOW-TO
 
-- [ ] go to [Snap Accounts Website](accounts.snapchat.com)
+- [ ] go to [Snap Accounts Website](https://accounts.snapchat.com)
 
 - [ ] click on "my data"
 
