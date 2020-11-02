@@ -9,6 +9,7 @@ from matplotlib.pyplot import show  # for command line args
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 OUT_PATH = SCRIPT_PATH
 
+
 def compare_date(a: str, b: str) -> bool:
 	'''
 	Takes two datetime Strings a and b in the form
@@ -18,7 +19,8 @@ def compare_date(a: str, b: str) -> bool:
 	'''
 	if(b.strip() == "" or a.strip() == ""):
 		raise ValueError("Empty String cant be compared")
-	return a[:10]<b[:10]
+	return a[:10] < b[:10]
+
 
 class parser:
 	def __init__(self):
@@ -138,7 +140,8 @@ class parser:
 		labels.append(f"Total: {self.total_snaps}")
 
 		fig = plt.figure(figsize=(fig_X, fig_Y))  # create plot
-		plt.title(f"Snap Stats from {self.minDate[:10]} to {self.maxDate[:10]}")
+		plt.title(
+			f"Snap Stats from {self.minDate[:10]} to {self.maxDate[:10]}")
 		plt.pie(data, explode=explode)  # draw pie chart
 		plt.legend(labels, bbox_to_anchor=(1.01, 1.15))
 		plt.savefig(fname)  # export
