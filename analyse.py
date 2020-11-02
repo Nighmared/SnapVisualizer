@@ -1,10 +1,7 @@
 import json  # for parsing
-import os
-from os import O_PATH  # for relative path
+import os # for relative path
 import matplotlib.pyplot as plt  # for pie chart
-import argparse
-
-from matplotlib.pyplot import show  # for command line args
+import argparse # for command line args
 
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 OUT_PATH = SCRIPT_PATH
@@ -24,6 +21,9 @@ def compare_date(a: str, b: str) -> bool:
 
 class parser:
 	def __init__(self):
+		'''
+		initialize starting values of instance variables
+		'''
 		self.minDate = "3000-12-31"
 		self.maxDate = "0000-01-01"
 		self.stats = {}
@@ -88,14 +88,14 @@ class parser:
 			res.append((uname, self.stats[uname]))
 		return res
 
-	def export(self, fname: str = f"snapExport"):
+	def export(self, fname: str = f"SnapVisualizer_csv_data"):
 		'''
 		write stats to valid csv file in working directory,
 		will be saved as "{fname}.csv"
 		'''
 		if not self.hasParsed:
 			raise RuntimeError("Cant export without parsing!")
-		fname = f"{O_PATH}/{fname}.csv"
+		fname = f"{OUT_PATH}/{fname}.csv"
 		sorted_stats = self.get_sorted()
 		out = open(fname, 'w')
 		out.write(f"Snap data from {self.minDate} to {self.maxDate}\n")
@@ -105,7 +105,7 @@ class parser:
 			out.write(f"{uname},{value}\n")
 		out.close()
 
-	def makePie(self, fname=f"pieExport"):
+	def make_pie(self, fname=f"SnapVisualizer_pie_chart"):
 		'''
 		Creates pie chart of data in self.stats
 		using matplotlib, exports the image
@@ -114,9 +114,9 @@ class parser:
 		'''
 		if not self.hasParsed:
 			raise RuntimeError("Cant evaluate without parsing!")
-		fname = f"{O_PATH}/{fname}.png"  # parse filename
-		fig_X = 13
-		fig_Y = 12
+		fname = f"{OUT_PATH}/{fname}.png"  # parse filename
+		fig_X = 15
+		fig_Y = 11
 		plt.style.use('dark_background')  # darkmode is superior
 		sorted_stats = self.get_sorted()
 		data = []
@@ -165,7 +165,7 @@ def main():
 	script is called from command line
 	'''
 	global SCRIPT_PATH
-	global O_PATH
+	global OUT_PATH
 	global SHOWCASE
 	NOTSETFLAG = "**NOTSET**"
 	# pass args -> sole purpose of being able to specifying custom dir
@@ -201,11 +201,11 @@ def main():
 	orig_script_dir = SCRIPT_PATH
 	SCRIPT_PATH = args.dir
 	if args.o == NOTSETFLAG:
-		O_PATH = SCRIPT_PATH
+		OUT_PATH = SCRIPT_PATH
 	elif args.o == ".":
-		O_PATH = orig_script_dir
+		OUT_PATH = args.o
 	else:
-		O_PATH = args.o
+		OUT_PATH = args.o
 
 	worker = parser()  # intialize
 
@@ -230,7 +230,7 @@ def main():
 	else:
 		if(args.csv):
 			worker.export()  # exports .csv file with usernames and number of snaps
-		worker.makePie()  # exports  pieExport.png with pie graph :)
+		worker.make_pie()  # exports  pieExport.png with pie graph :)
 
 
 if __name__ == '__main__':

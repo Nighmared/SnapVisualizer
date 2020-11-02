@@ -24,4 +24,11 @@ def test_too_early_eval():
 	assert t_parser.hasParsed == False
 	with pytest.raises(RuntimeError):
 		t_parser.export()
-		t_parser.makePie()
+		t_parser.make_pie()
+
+def test_parse_date():
+	testData = json.load(open("testdata.json"))
+	t_parser = parser()
+	t_parser.parse_hist(testData)
+	assert t_parser.maxDate == "2234-10-11 12:13:14 UTC"
+	assert t_parser.minDate == "1900-10-11 12:13:14 UTC"
