@@ -1,0 +1,14 @@
+{
+	"rec":[
+		{"From":"peter","Created":"2020-10-10 12:12:12 UTC"},
+		{"From":"peter","Created":"2020-10-11 12:13:14 UTC"},
+		{"From":"peter","Created":"2020-10-11 12:13:14 UTC"},
+		{"From":"erika","Created":"2020-10-11 12:13:14 UTC"}
+	],
+	"sent":[
+		{"To":"donald","Created":"2020-10-10 12:14:12 UTC"},
+		{"To":"mickey","Created":"2020-10-11 01:15:14 UTC"},
+		{"To":"walt","Created":"2234-10-11 12:13:14 UTC"},
+		{"To":"coke","Created":"1900-10-11 12:13:14 UTC"}
+	]
+}
