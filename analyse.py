@@ -115,7 +115,7 @@ class parser:
 		if not self.hasParsed:
 			raise RuntimeError("Cant evaluate without parsing!")
 		fname = f"{O_PATH}/{fname}.png"  # parse filename
-		fig_X = 17
+		fig_X = 13
 		fig_Y = 12
 		plt.style.use('dark_background')  # darkmode is superior
 		sorted_stats = self.get_sorted()
@@ -143,7 +143,7 @@ class parser:
 		plt.title(
 			f"Snap Stats from {self.minDate[:10]} to {self.maxDate[:10]}")
 		plt.pie(data, explode=explode)  # draw pie chart
-		plt.legend(labels, bbox_to_anchor=(1.01, 1.15))
+		plt.legend(labels, bbox_to_anchor=(1, 1.0))
 		plt.savefig(fname)  # export
 
 	def __repr__(self) -> str:
