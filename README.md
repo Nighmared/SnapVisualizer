@@ -32,17 +32,13 @@
 
   - run `python3 analyse.py --dir /path/to/json/files`
 
-- [ ] 2 new Files (will appear in json directory): 
-
-  - [ ] > pieExport.png
-
-  - [ ] > snapExport.csv
+- [ ] `pieExport.png` will be created
 
 ## CLI Usage
 
 ```bash
 $python3 analyse.py -h
-usage: analyse.py [-h] [--dir PATH] [--o PATH] [--showcase]
+usage: analyse.py [-h] [--dir PATH] [--o PATH] [--showcase] [--csv]
 
 Get pie chart from snap data :)
 
@@ -51,6 +47,7 @@ optional arguments:
   --dir PATH  path to location of json files, defaults to script location
   --o PATH    output directory for csv and png files, defaults to json directory
   --showcase  Dont show names, mainly to generate pics for README
+  --csv       Generate a csv file with the computed stats
 ```
 
 
@@ -66,7 +63,7 @@ analyse.py  README.md
 $python3 analyse.py --showcase --dir ~/Downloads/snapstats --o .
 [Warning] chat_history.json not found -> ignoring
 $ls
-analyse.py  pieExport.png  README.md  snapExport.csv
+analyse.py  pieExport.png  README.md
 ```
 
 

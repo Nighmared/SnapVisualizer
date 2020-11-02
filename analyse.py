@@ -9,15 +9,6 @@ from matplotlib.pyplot import show  # for command line args
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 OUT_PATH = SCRIPT_PATH
 
-
-def split_date(date: str) -> tuple:
-	'''
-	takes datetime String and returns
-	"(yyyy,mm,dd)"
-	tuple
-	'''
-	return (date[0:4], date[5:7], date[8:10])
-
 def compare_date(a: str, b: str) -> bool:
 	'''
 	Takes two datetime Strings a and b in the form
@@ -27,21 +18,7 @@ def compare_date(a: str, b: str) -> bool:
 	'''
 	if(b.strip() == "" or a.strip() == ""):
 		raise ValueError("Empty String cant be compared")
-	yearA, monthA, dayA = split_date(a)
-	yearB, monthB, dayB = split_date(b)
-	if yearA < yearB:
-		return True
-	if yearB < yearA:
-		return False
-	if monthA < monthB:
-		return True
-	if monthB < monthA:
-		return False
-	if dayA < dayB:
-		return True
-	return False
-	# this is so clearly bad code but idk how to fix...
-
+	return a[:10]<b[:10]
 
 class parser:
 	def __init__(self):
@@ -136,8 +113,8 @@ class parser:
 		if not self.hasParsed:
 			raise RuntimeError("Cant evaluate without parsing!")
 		fname = f"{O_PATH}/{fname}.png"  # parse filename
-		fig_X = 15
-		fig_Y = 10
+		fig_X = 17
+		fig_Y = 12
 		plt.style.use('dark_background')  # darkmode is superior
 		sorted_stats = self.get_sorted()
 		data = []
@@ -161,8 +138,9 @@ class parser:
 		labels.append(f"Total: {self.total_snaps}")
 
 		fig = plt.figure(figsize=(fig_X, fig_Y))  # create plot
+		plt.title(f"Snap Stats from {self.minDate[:10]} to {self.maxDate[:10]}")
 		plt.pie(data, explode=explode)  # draw pie chart
-		plt.legend(labels, bbox_to_anchor=(1.01, 1.1))
+		plt.legend(labels, bbox_to_anchor=(1.01, 1.15))
 		plt.savefig(fname)  # export
 
 	def __repr__(self) -> str:
@@ -209,6 +187,11 @@ def main():
 		action='store_true',
 		help='Dont show names, mainly to generate pics for README'
 	)
+	arg_parser.add_argument(
+		'--csv',
+		action='store_true',
+		help='Generate a csv file with the computed stats'
+	)
 	args = arg_parser.parse_args()
 	SHOWCASE = args.showcase
 
@@ -242,7 +225,8 @@ def main():
 	if(failcounter > 1):
 		print("[FATAL] neither file found, nothing to process\n shutting down...\n")
 	else:
-		worker.export()  # exports .csv file with usernames and number of snaps
+		if(args.csv):
+			worker.export()  # exports .csv file with usernames and number of snaps
 		worker.makePie()  # exports  pieExport.png with pie graph :)
 
 
