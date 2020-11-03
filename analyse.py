@@ -20,7 +20,8 @@ def compare_date(a: str, b: str) -> bool:
 
 
 class parser:
-	def __init__(self):
+	#TODO refactor whole counting stuff so it stores person objects with their properties
+	def __init__(self,cmap="plasma"):
 		'''
 		initialize starting values of instance variables
 		'''
@@ -29,6 +30,7 @@ class parser:
 		self.stats = {}
 		self.hasParsed = False
 		self.total_snaps = 0
+		self.cmap = cmap
 
 	def parse_hist(self, cont: dict):
 		'''
@@ -57,14 +59,15 @@ class parser:
 		for snap in history:
 			user = snap[keyword].lower()
 			date = snap["Created"]
+
 			if(user == lastUser and date == lastTime):
 				continue  # filter apparent double snaps??
 			lastUser, lastTime = user, date
 			self.update_date_range(date)
 			if user in self.stats.keys():
-				self.stats[user] += 1
+				self.stats[user].add_snap(isReceived)
 			else:
-				self.stats[user] = 1
+				self.stats[user] = person(user, numRec=isReceived, numSen= not isReceived)
 			self.total_snaps += 1
 
 	def update_date_range(self, newDate: str):
@@ -83,9 +86,11 @@ class parser:
 		"(username,self.stats[username])"
 		sorted by value (#of snaps)
 		'''
+		names = list(self.stats.keys())
+		names.sort(key = lambda x: self.stats[x].total_snaps, reverse=True)
 		res = []
-		for uname in sorted(self.stats, key=self.stats.get, reverse=True):
-			res.append((uname, self.stats[uname]))
+		for key in names:
+			res.append(self.stats[key])
 		return res
 
 	def export(self, fname: str = f"SnapVisualizer_csv_data"):
@@ -98,11 +103,12 @@ class parser:
 		fname = f"{OUT_PATH}/{fname}.csv"
 		sorted_stats = self.get_sorted()
 		out = open(fname, 'w')
-		out.write(f"Snap data from {self.minDate} to {self.maxDate}\n")
-		for (uname, value) in sorted_stats:
+		out.write(f"Snap data from {self.minDate} to {self.maxDate},total,received,sent\n")
+		for person_object in sorted_stats:
+			uname = person_object.username
 			if SHOWCASE:
 				uname = "*****"
-			out.write(f"{uname},{value}\n")
+			out.write(f"{uname},{person_object.total_snaps},{person_object.rec_from},{person_object.sent_to}\n")
 		out.close()
 
 	def make_pie(self, fname=f"SnapVisualizer_pie_chart"):
@@ -112,38 +118,80 @@ class parser:
 		as [fname].png to the directory of the
 		json files (SCRIPT_PATH)
 		'''
+		outer_size = 0.3
 		if not self.hasParsed:
 			raise RuntimeError("Cant evaluate without parsing!")
 		fname = f"{OUT_PATH}/{fname}.png"  # parse filename
-		fig_X = 15
-		fig_Y = 11
+		fig_Y = 16
+		fig_X = fig_Y+3
 		plt.style.use('dark_background')  # darkmode is superior
 		sorted_stats = self.get_sorted()
 		data = []
+		data2 = []
 		labels = []
 		explode = []
+		explode2 = []
 		control_total = 0  # trust issues lmao
+		cmap = plt.get_cmap(self.cmap)
+		in_col_src =  ((10,20),(50,60),(90,100))
+		out_col_src = (0,40,80)
+		out_cols = []
+		in_cols = []
+		
+		iter_count = 0
+		for person_object in sorted_stats:
+			uname = person_object.username
 
-		for (uname, value) in sorted_stats:
 			if SHOWCASE:
 				uname = "*******"
-			control_total += value
-			data.append(value)
-			labels.append(f"{uname} ({value})")
-			explode.append((1-value/self.total_snaps)/5)
+
+			control_total += person_object.total_snaps
+
+			data.append(person_object.total_snaps)
+			labels.append(f"{uname} ({person_object.total_snaps})")
+			data2.append(person_object.rec_from)
+			data2.append(person_object.sent_to)
+
+		#	explode.append((1-person_object.total_snaps/self.total_snaps)/5)
+			out_cols.append(out_col_src[iter_count%len(out_col_src)])
+			in_cols.append(in_col_src[iter_count%len(in_col_src)][0])
+			in_cols.append(in_col_src[iter_count%2][1])
+
+			iter_count+=1
 
 		if self.total_snaps != control_total:
-			raise ValueError("nonononono something went horribly wrong")
+			print(self.total_snaps,control_total)
+			#raise ValueError("nonononono something went horribly wrong")
 
-		explode.append(0)  # dummy entries for total at bottom of legend
+		#explode.append(0)  # dummy entries for total at bottom of legend
 		data.append(0)
 		labels.append(f"Total: {self.total_snaps}")
 
 		fig = plt.figure(figsize=(fig_X, fig_Y))  # create plot
 		plt.title(
 			f"Snap Stats from {self.minDate[:10]} to {self.maxDate[:10]}")
-		plt.pie(data, explode=explode)  # draw pie chart
-		plt.legend(labels, bbox_to_anchor=(1, 1.0))
+		
+		plt.pie(
+			data,
+			colors=cmap(out_cols),
+			radius =1,
+			wedgeprops=dict(
+				width=outer_size,
+				#edgecolor="k"
+				)
+			)  # draw pie chart
+		plt.pie(
+			data2,
+			colors=cmap(in_cols),
+			radius =1-outer_size,
+			wedgeprops=dict(
+				width=outer_size,
+				#edgecolor="k"
+				)
+			)
+		
+		plt.legend(labels, bbox_to_anchor=(1, 1.1))
+		
 		plt.savefig(fname)  # export
 
 	def __repr__(self) -> str:
@@ -233,5 +281,24 @@ def main():
 		worker.make_pie()  # exports  pieExport.png with pie graph :)
 
 
+
+class person:
+	def __init__(self,name,numRec:int = 0, numSen:int = 0):
+		self.username = name
+		self.sent_to = numSen
+		self.rec_from = numRec
+		self.total_snaps = self.sent_to+self.rec_from
+	
+	def add_snap(self,received : bool):
+		self.total_snaps +=1
+		if received:
+			self.rec_from +=1
+		else:
+			self.sent_to +=1
+	def __repr__(self) -> str:
+		return f"user: {self.username},\n\treceived snaps from this user: {self.rec_from},\n\tsent to this user: {self.sent_to}\n\ttotal: {self.total_snaps}"
+
+
 if __name__ == '__main__':
 	main()
+
