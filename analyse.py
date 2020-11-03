@@ -5,7 +5,7 @@ import argparse # for command line args
 
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 OUT_PATH = SCRIPT_PATH
-SHOWCASE = True
+SHOWCASE = False
 
 
 def compare_date(a: str, b: str) -> bool:
