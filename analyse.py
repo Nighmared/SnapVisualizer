@@ -193,6 +193,7 @@ class parser:
 		plt.legend(labels, bbox_to_anchor=(1, 1.1))
 		
 		plt.savefig(fname)  # export
+		plt.close() # IMPORTANT
 
 	def __repr__(self) -> str:
 		'''
