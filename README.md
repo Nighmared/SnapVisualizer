@@ -1,4 +1,4 @@
-# SnapVisualizer
+# SnapVisualizer - nested_graph
 
 ## Requirements
 
