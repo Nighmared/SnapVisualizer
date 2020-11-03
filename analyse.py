@@ -5,6 +5,7 @@ import argparse # for command line args
 
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 OUT_PATH = SCRIPT_PATH
+SHOWCASE = True
 
 
 def compare_date(a: str, b: str) -> bool:
@@ -145,6 +146,7 @@ class parser:
 		plt.pie(data, explode=explode)  # draw pie chart
 		plt.legend(labels, bbox_to_anchor=(1, 1.0))
 		plt.savefig(fname)  # export
+		plt.close()
 
 	def __repr__(self) -> str:
 		'''
