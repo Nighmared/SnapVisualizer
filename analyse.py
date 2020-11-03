@@ -21,7 +21,8 @@ def compare_date(a: str, b: str) -> bool:
 
 class parser:
 	#TODO refactor whole counting stuff so it stores person objects with their properties
-	def __init__(self,cmap="plasma"):
+	DEFAULTCMAP = "bone"
+	def __init__(self,cmap=DEFAULTCMAP):
 		'''
 		initialize starting values of instance variables
 		'''
@@ -31,6 +32,8 @@ class parser:
 		self.hasParsed = False
 		self.total_snaps = 0
 		self.cmap = cmap
+		if cmap.strip() =="":
+			self.cmap = parser.DEFAULTCMAP
 
 	def parse_hist(self, cont: dict):
 		'''
@@ -133,11 +136,13 @@ class parser:
 		explode2 = []
 		control_total = 0  # trust issues lmao
 		cmap = plt.get_cmap(self.cmap)
-		in_col_src =  ((10,20),(50,60),(90,100))
-		out_col_src = (0,40,80)
+		in_col_src =  ((10,20),(50,60),(90,100),(50,60))
+		out_col_src = (2,42,82,42)
 		out_cols = []
 		in_cols = []
-		
+
+		assert len(in_col_src) == len(out_col_src) #prevent dumbness
+
 		iter_count = 0
 		for person_object in sorted_stats:
 			uname = person_object.username
@@ -155,15 +160,13 @@ class parser:
 		#	explode.append((1-person_object.total_snaps/self.total_snaps)/5)
 			out_cols.append(out_col_src[iter_count%len(out_col_src)])
 			in_cols.append(in_col_src[iter_count%len(in_col_src)][0])
-			in_cols.append(in_col_src[iter_count%2][1])
+			in_cols.append(in_col_src[iter_count%len(in_col_src)][1])
 
 			iter_count+=1
 
 		if self.total_snaps != control_total:
-			print(self.total_snaps,control_total)
-			#raise ValueError("nonononono something went horribly wrong")
+			raise ValueError("nonononono something went horribly wrong")
 
-		#explode.append(0)  # dummy entries for total at bottom of legend
 		data.append(0)
 		labels.append(f"Total: {self.total_snaps}")
 
@@ -193,7 +196,7 @@ class parser:
 		plt.legend(labels, bbox_to_anchor=(1, 1.1))
 		
 		plt.savefig(fname)  # export
-		plt.close() # IMPORTANT
+		plt.close() # IMPORTANT -> memory leak if used more than once
 
 	def __repr__(self) -> str:
 		'''
@@ -244,6 +247,14 @@ def main():
 		action='store_true',
 		help='Generate a csv file with the computed stats'
 	)
+	arg_parser.add_argument(
+	'--cmap',
+	type=str,
+	default = "",
+	metavar="CMAP",
+	help="A valid matplotlib colormap"
+	)
+	
 	args = arg_parser.parse_args()
 	SHOWCASE = args.showcase
 
@@ -256,7 +267,7 @@ def main():
 	else:
 		OUT_PATH = args.o
 
-	worker = parser()  # intialize
+	worker = parser(args.cmap)  # intialize
 
 	failcounter = 0  # keep track of how many errors excepted
 
